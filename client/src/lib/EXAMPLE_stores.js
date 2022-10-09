@@ -9,7 +9,7 @@ if (browser)
 export var pageParams = writable({ page: 1, size: 10 });
 export var searchRadius = writable(20);
 
-// Geoplugin results
+// Geoplugin results test
 export var loc = writable({
     lat: '0',
     lon: '0',
