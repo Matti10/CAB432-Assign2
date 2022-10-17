@@ -50,7 +50,7 @@
         <hr class="border-zinc-600 border-t-2" />
         <div class="flex items-center flex-col">
             <h3>CAB432 Assignment 1 Frontend</h3>
-            <h4>n9995846 - Simon Di Florio</h4>
+            <h4>n9995846 - Simon Di Florio & n10467874 - Mattias Winsen</h4>
         </div>
     </section>
 </footer>
