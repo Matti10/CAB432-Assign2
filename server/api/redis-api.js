@@ -12,10 +12,6 @@
 const redis = require('redis');
 require('dotenv').config();
 
-module.exports = {
-    redisClient,
-};
-
 // Redis setup
 const redisClient = redis.createClient();
 (async function connectClient() {
@@ -26,3 +22,7 @@ const redisClient = redis.createClient();
         throw exc;
     }
 })();
+
+module.exports = {
+    redisClient,
+};

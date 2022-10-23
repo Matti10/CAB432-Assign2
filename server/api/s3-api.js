@@ -23,11 +23,6 @@ const {
 
 require('dotenv').config();
 
-module.exports = {
-    s3client,
-    getObject,
-};
-
 const s3client = new S3Client({ region: process.env.AWS_REGION });
 
 // create S3 bucket on module load
@@ -70,3 +65,9 @@ async function generatePresignedUrl(key, expiration) {
     });
     return getSignedUrl(s3client, command, { expiresIn: expiration });
 }
+
+module.exports = {
+    s3client,
+    getObject,
+    generatePresignedUrl,
+};
