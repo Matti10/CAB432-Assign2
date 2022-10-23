@@ -24,25 +24,35 @@ const {
 require('dotenv').config();
 
 const s3client = new S3Client({ region: process.env.AWS_REGION });
+const EXPIRATION = 300;
 
 // create S3 bucket on module load
-(async function initBucket() {
+async function initBucket() {
     const command = new CreateBucketCommand({
         Bucket: process.env.S3_BUCKET_NAME,
     });
     try {
+        console.log("S3: Creating bucket...");
         const data = await s3client.send(command);
-        // console.log("Success", data.$metadata.requestId);
         console.log("S3: Bucket created");
         return data;
     } catch (exc) {
-        // TODO add in existing bucket conditional
-        console.log("S3 Error:", exc);
-        throw exc;
+        // if bucket already exists, ignore error
+        if (exc.Code === "BucketAlreadyOwnedByYou") {
+            console.log("S3: Bucket already owned by server");
+        }
+        else if (exc.Code === "BucketAlreadyExists") {
+            console.log("S3: Bucket already exists");
+        }
+        // otherwise, throw error and stop server
+        else {
+            console.log("S3 Error:", exc);
+            throw exc;
+        }
     }
-})();
+}
 
-// Get object from S3
+// Get object directly from S3
 async function getObject(key) {
     const command = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
@@ -58,16 +68,61 @@ async function getObject(key) {
     }
 }
 
-async function generatePresignedUrl(key, expiration) {
+// Put object directly in S3
+async function putObject(key) {
+    const command = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: key,
+    });
+    try {
+        const signedUrl = await s3client.send(command);
+        return signedUrl;
+    }
+    catch (exc) {
+        console.log("S3 Error:", exc);
+        throw exc;
+    }
+}
+
+// Create signed url for downloading key from S3
+async function getDownloadUrl(key) {
     const command = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
         Key: key,
     });
-    return getSignedUrl(s3client, command, { expiresIn: expiration });
+    try {
+        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: EXPIRATION });
+        return signedUrl;
+    }
+    catch (exc) {
+        console.log("S3 Error:", exc);
+        throw exc;
+    };
+}
+
+// Create signed url for uploading key to S3
+async function getUploadUrl(key) {
+    const command = new PutObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: key,
+    });
+    try {
+        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: EXPIRATION });
+        return signedUrl;
+    }
+    catch (exc) {
+        console.log("S3 Error:", exc);
+        throw exc;
+    };
 }
 
 module.exports = {
     s3client,
+    initBucket,
+
     getObject,
-    generatePresignedUrl,
+    putObject,
+
+    getDownloadUrl,
+    getUploadUrl
 };

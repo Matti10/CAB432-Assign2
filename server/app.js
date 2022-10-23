@@ -13,12 +13,16 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 
 require('dotenv').config();
 
 const s3 = require('./api/s3-api');
 const redis = require('./api/redis-api');
 const sharp = require('./api/sharp-api');
+
+s3.initBucket();
+redis.initClient();
 
 const indexRouter = require('./routes/index');
 const uploadRouter = require('./routes/upload');
@@ -30,7 +34,8 @@ const app = express();
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-// setup server properties
+// setup server middleware
+app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

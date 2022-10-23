@@ -14,15 +14,18 @@ require('dotenv').config();
 
 // Redis setup
 const redisClient = redis.createClient();
-(async function connectClient() {
+async function initClient() {
     try {
+        console.log("Redis: Connecting to client...");
         await redisClient.connect();
+        console.log("Redis: Connected");
     } catch (exc) {
-        console.log(exc);
+        console.log("Redis Error:", exc);
         throw exc;
     }
-})();
+}
 
 module.exports = {
     redisClient,
+    initClient
 };
