@@ -11,9 +11,26 @@
 const express = require('express');
 const router = express.Router();
 
-/* GET users listing. */
+const s3 = require('../api/s3-api');
+
 router.get('/', function (req, res, next) {
     res.status(200).send('respond with a resource');
+});
+
+// Get signed URL for uploading file to S3
+router.get('/signedUrl/:checksum', function (req, res) {
+    const checksum = req.params.checksum;
+
+    try {
+        s3.getUploadUrl(checksum)
+            .then(url => {
+                res.status(200).send(url);
+            });
+    }
+    catch (exc) {
+        console.log("Upload:", exc);
+        res.status(500).send('Error getting signed URL');
+    }
 });
 
 module.exports = router;
