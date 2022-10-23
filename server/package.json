@@ -7,8 +7,8 @@
         "dev": "nodemon ./bin/www"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.186.0",
-        "aws-sdk": "^2.1228.0",
+        "@aws-sdk/client-s3": "^3.194.0",
+        "@aws-sdk/s3-request-presigner": "^3.194.0",
         "axios": "^1.1.2",
         "cookie-parser": "~1.4.4",
         "cors": "^2.8.5",
