@@ -21,16 +21,17 @@ router.get('/', function (req, res, next) {
 router.get('/signedUrl/:checksum', function (req, res) {
     const checksum = req.params.checksum;
 
-    try {
-        s3.getUploadUrl(checksum)
-            .then(url => {
-                res.status(200).send(url);
+    s3.getUploadUrl(checksum)
+        .then(signedUrl => {
+            res.status(200).json({
+                source: "upload",
+                url: signedUrl
             });
-    }
-    catch (exc) {
-        console.log("Upload:", exc);
-        res.status(500).send('Error getting signed URL');
-    }
+        })
+        .catch(exc => {
+            console.log("Upload Error:", exc);
+            res.status(500).send('Error getting signed URL');
+        });
 });
 
 module.exports = router;

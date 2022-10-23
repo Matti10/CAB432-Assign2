@@ -45,7 +45,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // setup routes
 app.use('/', indexRouter);
 app.use('/upload', uploadRouter);
-app.use('/download', uploadRouter);
+app.use('/download', downloadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

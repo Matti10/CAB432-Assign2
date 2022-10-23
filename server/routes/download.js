@@ -22,16 +22,40 @@ router.get('/', function (req, res, next) {
 router.get('/signedUrl/:checksum', function (req, res) {
     const checksum = req.params.checksum;
 
-    try {
-        s3.getDownloadUrl(checksum)
-            .then(url => {
-                res.status(200).send(url);
-            });
-    }
-    catch (exc) {
-        console.log("Upload:", exc);
-        res.status(500).send('Error getting signed URL');
-    }
+    s3.getDownloadUrl(checksum)
+        .then(url => {
+            res.status(200).send(url);
+        })
+        .catch(exc => {
+            console.log("Download Error:", exc);
+            res.status(500).send('Error getting signed URL');
+        });
+
+});
+
+router.get('/object/:checksum', function (req, res) {
+    const checksum = req.params.checksum;
+
+    s3.getObject(checksum)
+        .then(object => {
+            res.status(200).json(object);
+        })
+        .catch(exc => {
+            console.log("Download Error:", exc);
+            res.status(500).send('Error getting object');
+        });
+});
+
+router.get('/list', function (req, res) {
+
+    s3.listObjects()
+        .then(objects => {
+            res.status(200).send(objects);
+        })
+        .catch(exc => {
+            console.log("Download Error:", exc);
+            res.status(500).send('Error getting object list');
+        });
 });
 
 module.exports = router;

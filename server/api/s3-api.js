@@ -15,6 +15,7 @@ const {
     CreateBucketCommand,
     PutObjectCommand,
     GetObjectCommand,
+    ListObjectsCommand,
 } = require("@aws-sdk/client-s3");
 
 const {
@@ -23,8 +24,20 @@ const {
 
 require('dotenv').config();
 
+const fs = require('fs');
+
+
 const s3client = new S3Client({ region: process.env.AWS_REGION });
 const EXPIRATION = 300;
+
+// Helper function to convert a ReadableStream to a string.
+const streamToString = (stream) =>
+    new Promise((resolve, reject) => {
+        const chunks = [];
+        stream.on("data", (chunk) => chunks.push(chunk));
+        stream.on("error", reject);
+        stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+    });
 
 // create S3 bucket on module load
 async function initBucket() {
@@ -53,6 +66,21 @@ async function initBucket() {
 }
 
 // Get object directly from S3
+async function listObjects() {
+    const command = new ListObjectsCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+    });
+    try {
+        const data = await s3client.send(command);
+        return data;
+    }
+    catch (exc) {
+        console.log("S3 Error:", exc);
+        throw exc;
+    }
+}
+
+// Get object directly from S3
 async function getObject(key) {
     const command = new GetObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
@@ -60,7 +88,19 @@ async function getObject(key) {
     });
     try {
         const data = await s3client.send(command);
-        return data;
+
+        // return data.body;
+
+        // const inputStream = data.Body;
+        // const downloadPath = 'example.png';
+        // const outputStream = fs.createWriteStream(downloadPath);
+        // inputStream.pipe(outputStream);
+        // outputStream.on('finish', () => {
+        //     console.log(`downloaded the file successfully`);
+        // });
+
+        let body = await streamToString(data.Body);
+        return body;
     }
     catch (exc) {
         console.log("S3 Error:", exc);
@@ -120,6 +160,7 @@ module.exports = {
     s3client,
     initBucket,
 
+    listObjects,
     getObject,
     putObject,
 
