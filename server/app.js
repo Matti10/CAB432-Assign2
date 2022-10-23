@@ -1,26 +1,46 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+/* CAB432 Assignment 2
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+    Author: Simon Di Florio
+    Date: 23/10/2022
 
-var app = express();
+    References:
+
+    This file contains the server app code 
+*/
+
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+
+require('dotenv').config();
+
+const s3 = require('./api/s3-api');
+const redis = require('./api/redis-api');
+const sharp = require('./api/sharp-api');
+
+const indexRouter = require('./routes/index');
+const uploadRouter = require('./routes/upload');
+const downloadRouter = require('./routes/download');
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
-app.use(logger('dev'));
+// setup server properties
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// setup routes
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/upload', uploadRouter);
+app.use('/download', uploadRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

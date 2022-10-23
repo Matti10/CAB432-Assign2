@@ -5,16 +5,15 @@
 
     References:
 
-    This file contains router code for the server index
+    This file contains router code for uploading images to the S3 bucket
 */
 
 const express = require('express');
 const router = express.Router();
 
-/* GET home page. */
+/* GET users listing. */
 router.get('/', function (req, res, next) {
-    res.render('index', { title: 'CAB432 Express App' });
-    res.status(200).send('CAB432 Server Index');
+    res.status(200).send('respond with a resource');
 });
 
 module.exports = router;
