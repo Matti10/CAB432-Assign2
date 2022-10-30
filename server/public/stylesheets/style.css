@@ -1,0 +1,22 @@
+/*
+
+*/
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+main {
+
+}
+
+footer {
+    margin-top: auto;
+}
+
+a {
+    color: #00B7FF;
+}
