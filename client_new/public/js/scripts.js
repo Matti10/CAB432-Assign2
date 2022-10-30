@@ -10,6 +10,17 @@
 // Globals
 var files;
 
+// modified from: https://stackoverflow.com/questions/34492637/how-to-calculate-md5-checksum-of-blob-using-cryptojs
+function calculateMd5(blob) {
+    var reader = new FileReader();
+    reader.readAsBinaryString(blob);
+    reader.onloadend = function () {
+      var  hash = CryptoJS.MD5(reader.result).toString();
+      console.log("MD5 Checksum", hash);
+      return hash;
+    };
+  }
+
 
 window.addEventListener('DOMContentLoaded', event => {
 
@@ -59,7 +70,6 @@ window.addEventListener('DOMContentLoaded', event => {
 
 });
 
-
 $(document).on('change', '.file-input', function() {
     //update input feild
     var filesCount = $(this)[0].files.length;
@@ -74,11 +84,36 @@ $(document).on('change', '.file-input', function() {
       textbox.text(filesCount + ' files selected');
     }
     
-    files = $(this)[0].files
+    files = $(this)[0].files;
 
   });
 
   $("#submit").on('click',function() {
-    console.log('submit clicked')
-    console.log(files)
-  });
+    console.log('submit clicked');
+    console.log(files);
+    
+
+    files.forEach(file => {
+        
+        console.log(file);
+        console.log("test",calculateMd5(file));
+        
+        var img = new Object();
+        img.id = calculateMd5(file);
+        img.height = document.getElementById("imgHeight").value;
+        img.width = document.getElementById("imgWidth").value;
+        img.type = document.getElementById("fileType").value;
+        img.rotation = document.getElementById("imgRotation").value;
+        img.vFlip = document.getElementById("vFlip").value
+        img.hFlip = document.getElementById("hFlip").value;
+        
+        var json = JSON.stringify(img);
+        
+        console.log(json)
+
+    });
+
+
+
+
+});
