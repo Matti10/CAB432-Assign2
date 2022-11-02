@@ -14,9 +14,8 @@ var someString = 'some string';
 
 
 // modified from: https://stackoverflow.com/questions/34492637/how-to-calculate-md5-checksum-of-blob-using-cryptojs
-function calculateMd5(blob, callback) {
+function calculateMd5(blob) {
     var reader = new FileReader();
-    var Hash = ''
     reader.readAsBinaryString(blob);
     reader.onloadend = function() { };
 
@@ -115,10 +114,10 @@ $("#submit").on('click',function() {
         console.log(ImgJSON)
         var uploadLink = getS3Link(img.id)
             .then(uploadLink => {
-                uploadToS3(uploadLink, file)
+                res = uploadToS3(uploadLink, file)
+                console.log(res)
             })
         console.log(uploadLink);
-
     });
 
 });
