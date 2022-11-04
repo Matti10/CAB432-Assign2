@@ -10,7 +10,21 @@
 */
 
 const sharp = require('sharp');
+const s3 = require('./s3-api');
+const { streamToBuffer } = require('./streamhelpers');
+
+
+async function readImage(objectStream) {
+    stream = await s3.getObjectStream('Pigeon_Square');
+    buffer = await streamToBuffer(stream);
+
+    const transform = sharp();
+
+    await image.toFile('fileOutput.png');
+    return image;
+}
+
 
 module.exports = {
-
+    readImage
 };
