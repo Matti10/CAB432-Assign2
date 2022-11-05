@@ -18,6 +18,20 @@
                 "run-script",
                 "dev"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug Client",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}\\client",
+            "runtimeExecutable": "node",
+            "runtimeArgs": [
+                "client"
+            ]
         }
     ]
 }

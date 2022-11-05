@@ -4,14 +4,50 @@
     Date: 23/10/2022
 
     References:
-    https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-s3/index.html 
-    https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/s3-examples.html
 
-    This file contains API code for AWS S3
+    This file contains Generic helper functions
 */
 
 const fs = require('fs');
+const CryptoJS = require("crypto-js");
 
+// Calculate Image checksum
+function calculateMd5(buffer) {
+    // var reader = new FileReader();
+    // reader.readAsBinaryString(blob);
+    // reader.onloadend = function () { };
+
+    return CryptoJS.MD5(buffer).toString();
+}
+
+function constructKey(key, pm) {
+    let persistKey = `${key};`;
+    // chain transform operations to construct key
+    if (pm.resize)
+        persistKey += `resize:${pm.resize.width}-${pm.resize.height};`;
+    if (pm.rotate)
+        persistKey += `rotate:${pm.rotate};`;
+    if (pm.flip)
+        persistKey += `flip;`;
+    if (pm.flop)
+        persistKey += `flop;`;
+    if (pm.sharpen)
+        persistKey += `sharpen:${pm.sharpen};`;
+    if (pm.median)
+        persistKey += `median:${pm.median};`;
+    if (pm.blur)
+        persistKey += `blur:${pm.blur};`;
+    if (pm.normalise)
+        persistKey += `normalise;`;
+    if (pm.threshold)
+        persistKey += `threshold:${pm.threshold};`;
+    if (pm.type)
+        persistKey += `type:${pm.type}`;
+    else
+        persistKey += `type:.png`;
+
+    return persistKey;
+}
 
 // Helper function to convert a ReadableStream to a string.
 async function streamToString(stream) {
@@ -44,6 +80,8 @@ const streamToFile = (stream, downloadPath) => {
 };
 
 module.exports = {
+    calculateMd5,
+    constructKey,
     streamToString,
     streamToBuffer,
     streamToFile
