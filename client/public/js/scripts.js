@@ -1,23 +1,25 @@
 /*!
-* Start Bootstrap - Grayscale v7.0.5 (https://startbootstrap.com/theme/grayscale)
-* Copyright 2013-2022 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-grayscale/blob/master/LICENSE)
+CAB432 Assignment 2
+
+    Author: Mattias Winsen
+    Date: 20/10/2022
+
+    References:
+        Start Bootstrap - Grayscale v7.0.5 (https://startbootstrap.com/theme/graysca
+        Copyright 2013-2022 Start Bootst
+        Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-grayscale/blob/master/LICEN
 */
-//
-// Scripts
-// 
 
 // Globals
 var files;
 var serverAddress = 'http://127.0.0.1:3001';
-var someString = 'some string';
 
 
 // modified from: https://stackoverflow.com/questions/34492637/how-to-calculate-md5-checksum-of-blob-using-cryptojs
 function calculateMd5(blob) {
     var reader = new FileReader();
     reader.readAsBinaryString(blob);
-    reader.onloadend = function() { };
+    reader.onloadend;
 
     return CryptoJS.MD5(reader.result).toString();
 }
@@ -90,16 +92,17 @@ $(document).on('change', '.file-input', function() {
 
 });
 
+// process data when submit button is clicked
 $("#submit").on('click',function() {
     console.log('submit clicked');
     console.log(files);
 
+    //generate a unique sessionID
     const d = new Date();
     sessionID = d.getTime().toString() + "-" + calculateMd5(files[0])
 
     files.forEach(file => {
         
-        console.log(file);
 
         // collect img info
         var img = new Object();
@@ -115,14 +118,9 @@ $("#submit").on('click',function() {
         // convert to json 
         var ImgJSON = JSON.stringify(img);
         
-        
-
-        // set buttoin to "loading"
+        // set button to "loading"
         document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...'
 
-        var downloadLink = 
-        
-        
         //get S3 presigned link and upload img blob
         console.log(ImgJSON)
         var uploadLink = getS3Link(img.id)
@@ -132,7 +130,7 @@ $("#submit").on('click',function() {
             console.log(uploadLink);
         })
         // .then(
-        //     // send JSON to server
+        //     // send img config JSON to server
         //     uploadImgData(ImgJSON)
         //     .then((res) => {
         //         if (!res.ok){
@@ -158,7 +156,7 @@ $("#submit").on('click',function() {
 
 });
 
-
+// get a presigned s3 link to send the image blob too
 async function getS3Link(checksum)
 {
     address = serverAddress + "/upload/signedUrl/" + checksum;
@@ -178,6 +176,7 @@ async function getS3Link(checksum)
     return response.url
 }
 
+// uploads the image 'blob' to the backend
 async function uploadToS3(URL, file)
 {
     const headers = new Headers({ 'Content-Type': 'image/*' });
@@ -190,6 +189,7 @@ async function uploadToS3(URL, file)
     return response
 }
 
+// uploads the image transformation to the backend
 async function uploadImgData(data)
 {
     const headers = new Headers({ 'Content-Type': 'application/json' });
@@ -202,6 +202,8 @@ async function uploadImgData(data)
     return response
 }
 
+
+// Hits the backend's download endpoint to download a converted image
 async function getProcessedImg(sessionID)
 {
     const headers = new Headers({ 'Accept': '*/*' });
