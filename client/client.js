@@ -46,6 +46,6 @@ console.log('routes loaded');
 
 
 // Run the server
-app.listen(port, hostname, () => { 
-   console.log(`Server running at http://${hostname}:${port}/`); 
+app.listen(port, () => { 
+   console.log(`Server running at port ${port}`); 
 }); 
