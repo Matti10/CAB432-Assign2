@@ -3,5 +3,7 @@
 
 ## Server Setup
     redis-server --daemonize yes
+    
+    redis-cli flushall
 
 ## Client Setup
