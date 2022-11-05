@@ -148,7 +148,7 @@ $("#submit").on('click',function() {
         .then((downloadLink) => {
             console.log(downloadLink)
             //download files and reset form
-            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink + '" style="background-color: green" class="btn btn-primary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->>Conversion Complete, Click here to download images</a>'
+            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink + '" style="background-color: green" class="btn btn-secondary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->Conversion Complete, Click here to download images</a>'
 
         })
 

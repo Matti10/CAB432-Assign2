@@ -9,6 +9,8 @@
     References:
     CAB432 Lectures
 */
+console.log('Client Server Loading');
+
 
 // load http module
 var http = require('http');
@@ -24,6 +26,7 @@ var path = require('path')
 var app = express();
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.static(path.join(__dirname, '/node_modules')));
+console.log('Express loaded');
 
 
 // Setup routes
@@ -39,6 +42,8 @@ app.get('/', (req, res) => {
         }
     });
 });
+console.log('routes loaded');
+
 
 // Run the server
 app.listen(port, hostname, () => { 
