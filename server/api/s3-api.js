@@ -53,7 +53,7 @@ async function initBucket() {
         }
         // otherwise, throw error and stop server
         else {
-            console.log("S3 Error:", exc);
+            console.log("S3 Error:", exc.Code, exc.message);
             throw exc;
         }
     }
@@ -69,7 +69,7 @@ async function listObjects() {
         return data;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -91,7 +91,7 @@ async function getObject(key) {
         return body;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -107,7 +107,7 @@ async function getObjectStream(key) {
         return data.Body;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -123,7 +123,7 @@ async function putObject(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -139,7 +139,7 @@ async function getDownloadUrl(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     };
 }
@@ -155,7 +155,7 @@ async function getUploadUrl(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     };
 }

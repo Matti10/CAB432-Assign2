@@ -4,7 +4,7 @@
     Date: 23/10/2022
 
     References:
-
+    https://www.npmjs.com/package/redis
 
     This file contains API code for Redis
 */
@@ -25,7 +25,30 @@ async function initClient() {
     }
 }
 
+function constructKey(key, params) {
+    let redisKey = `${key};`;
+    // chain transform operations to construct key
+    if (params.resize && params.resize.width && params.resize.height)
+        redisKey += `resize:${params.resize.width}-${params.resize.height};`;
+    if (params.type)
+        redisKey += `type:${params.type}`;
+
+    return redisKey;
+}
+
+async function getTransform(redisKey) {
+    const result = await redisClient.get(redisKey);
+    return result;
+}
+
+async function storeTransform(redisKey, transformKey) {
+    redisClient.setEx(redisKey, 3600, transformKey);
+}
+
 module.exports = {
     redisClient,
-    initClient
+    initClient,
+    constructKey,
+    getTransform,
+    storeTransform,
 };
