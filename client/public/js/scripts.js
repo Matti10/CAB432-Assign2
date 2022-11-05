@@ -1,5 +1,5 @@
-/*!
-CAB432 Assignment 2
+/*
+    CAB432 Assignment 2
 
     Author: Mattias Winsen
     Date: 20/10/2022
