@@ -33,8 +33,13 @@ router.get('/signedUrl/:checksum', function (req, res) {
 
 });
 
+// DEBUG route that gets server to download and send object to client
+// use /signedURl/:checksum in production
 router.get('/object/:checksum', function (req, res) {
     const checksum = req.params.checksum;
+
+    // res.type(`image/${format || 'png'}`); // set content-type - modify to match file type
+
 
     s3.getObject(checksum)
         .then(object => {
@@ -46,6 +51,7 @@ router.get('/object/:checksum', function (req, res) {
         });
 });
 
+// DEBUG route that gets list of all objects in S3 bucket
 router.get('/list', function (req, res) {
 
     s3.listObjects()

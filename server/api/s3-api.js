@@ -24,20 +24,14 @@ const {
 
 require('dotenv').config();
 
-const fs = require('fs');
-
+const strm = require('./streamhelpers');
 
 const s3client = new S3Client({ region: process.env.AWS_REGION });
 const EXPIRATION = 300;
 
-// Helper function to convert a ReadableStream to a string.
-const streamToString = (stream) =>
-    new Promise((resolve, reject) => {
-        const chunks = [];
-        stream.on("data", (chunk) => chunks.push(chunk));
-        stream.on("error", reject);
-        stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-    });
+
+
+
 
 // create S3 bucket on module load
 async function initBucket() {
@@ -59,7 +53,7 @@ async function initBucket() {
         }
         // otherwise, throw error and stop server
         else {
-            console.log("S3 Error:", exc);
+            console.log("S3 Error:", exc.Code, exc.message);
             throw exc;
         }
     }
@@ -75,7 +69,7 @@ async function listObjects() {
         return data;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -89,21 +83,31 @@ async function getObject(key) {
     try {
         const data = await s3client.send(command);
 
-        // return data.body;
+        // use contentType to get the file extension
+        strm.streamToFile(data.Body, 'example.png');
 
-        // const inputStream = data.Body;
-        // const downloadPath = 'example.png';
-        // const outputStream = fs.createWriteStream(downloadPath);
-        // inputStream.pipe(outputStream);
-        // outputStream.on('finish', () => {
-        //     console.log(`downloaded the file successfully`);
-        // });
 
-        let body = await streamToString(data.Body);
+        let body = await strm.streamToString(data.Body);
         return body;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
+        throw exc;
+    }
+}
+
+// Get object stream directly from S3
+async function getObjectStream(key) {
+    const command = new GetObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: key,
+    });
+    try {
+        const data = await s3client.send(command);
+        return data.Body;
+    }
+    catch (exc) {
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -119,7 +123,7 @@ async function putObject(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     }
 }
@@ -135,7 +139,7 @@ async function getDownloadUrl(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     };
 }
@@ -151,7 +155,7 @@ async function getUploadUrl(key) {
         return signedUrl;
     }
     catch (exc) {
-        console.log("S3 Error:", exc);
+        console.log("S3 Error:", exc.Code, exc.message);
         throw exc;
     };
 }
@@ -162,6 +166,7 @@ module.exports = {
 
     listObjects,
     getObject,
+    getObjectStream,
     putObject,
 
     getDownloadUrl,
