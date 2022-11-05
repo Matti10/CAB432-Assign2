@@ -19,7 +19,7 @@ var express = require('express');
 
 // Defines
 const hostname = '127.0.0.1'; 
-const port = 3000;
+const port = 3002;
 var path = require('path')
 
 // Setup app
