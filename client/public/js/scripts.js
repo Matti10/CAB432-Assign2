@@ -109,10 +109,10 @@ $("#submit").on('click',function() {
         // collect img info
         var img = new Object();
         img.resize = new Object();
-        img.resize.height = checkIfNull(document.getElementById("imgHeight").value);
-        img.resize.width = checkIfNull(document.getElementById("imgWidth").value);
+        img.resize.height = checkIfNull(parseInt(document.getElementById("imgHeight").value));
+        img.resize.width = checkIfNull(parseInt(document.getElementById("imgWidth").value));
         img.type = checkIfNull(document.getElementById("fileType").value);
-        img.rotate = checkIfNull(document.getElementById("imgRotation").value);
+        img.rotate = checkIfNull(parseInt(document.getElementById("imgRotation").value.toIn));
         img.flip = checkIfBoolean(document.getElementById("vFlip").value);
         img.flop = checkIfBoolean(document.getElementById("hFlip").value);
         
@@ -140,20 +140,22 @@ $("#submit").on('click',function() {
         })
         .then(
             // send img config JSON to server
-            uploadImgData(reqJSON)
+            downlink = uploadImgData(reqJSON)
             .then((res) => {
                 if (!res.ok){
                     console.log("Serverside error:" + res.statusText);
                     throw new Error('HTTP ' + res.status);
                 } else {
                     console.log(res.json())
+                    return res.json();
                 }
                 
             })
         )
-        .then(() => {            
-            return getProcessedImg(req.id)
-        })
+        // .then(() => {
+        //     console.log("req.key: " + req.key)            
+        //     return getProcessedImg(req.key)
+        // })
         .then((downloadLink) => {
             console.log(downloadLink)
             //download files and reset form
@@ -233,10 +235,10 @@ async function uploadImgData(data)
 
 
 // Hits the backend's download endpoint to download a converted image
-async function getProcessedImg(sessionID)
+async function getProcessedImg(id)
 {
     const headers = new Headers({ 'Accept': '*/*' });
-    address = serverAddress + "/download/signedUrl/" + sessionID;
+    address = serverAddress + "/download/signedUrl/" + id;
     response = await fetch(address, {
         method: 'GET',
         headers: headers,
