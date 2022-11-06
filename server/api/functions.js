@@ -47,9 +47,9 @@ function constructKey(key, pm) {
     transformKey = calculateMd5(transformKey);
     // 
     if (pm.type)
-        transformKey += `type:${pm.type}`;
+        transformKey += `${pm.type}`;
     else
-        transformKey += `type:.png`;
+        transformKey += `.png`;
 
     persistKey += `${transformKey}`;
     return persistKey;
