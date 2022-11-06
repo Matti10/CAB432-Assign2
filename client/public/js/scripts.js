@@ -12,7 +12,7 @@
 
 // Globals
 var files;
-var serverAddress = 'http://n9995846-assign2-server-128342326.ap-southeast-2.elb.amazonaws.com/';
+var serverAddress = 'http://n9995846-assign2-load-494740891.ap-southeast-2.elb.amazonaws.com';
 
 
 // modified from: https://stackoverflow.com/questions/34492637/how-to-calculate-md5-checksum-of-blob-using-cryptojs
