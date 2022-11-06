@@ -9,46 +9,57 @@
     This file contains API code for SharpJS
 */
 
-const CryptoJS = require("crypto-js");
 const sharp = require('sharp');
-const s3 = require('./s3-api');
-const { streamToBuffer } = require('./streamhelpers');
+const { streamToBuffer } = require('./functions');
 
-// Calculate Image checksum
-function calculateMd5(blob) {
-    var reader = new FileReader();
-    reader.readAsBinaryString(blob);
-    reader.onloadend = function () { };
+async function readImage(stream) {
 
-    return CryptoJS.MD5(reader.result).toString();
-}
-
-async function readImage(key) {
-    try {
-        stream = await s3.getObjectStream(key);
-    }
-    catch (exc) {
-        throw exc;
-    }
     buffer = await streamToBuffer(stream);
     const transformer = sharp(buffer);
 
     return transformer;
 }
 
-async function transformImage(transformer, params) {
-    if (params.resize) {
-        transformer.resize(params.resize.width, params.resize.height);
-    }
-    else
-        console.log("no resize");
+async function transformImage(tf, pm) {
+    if (pm.resize)
+        tf = await tf.resize(pm.resize.width, pm.resize.height);
+    if (pm.rotate)
+        tf = await tf.rotate(pm.rotate);
+    if (pm.flip)
+        tf = await tf.flip();
+    if (pm.flop)
+        tf = await tf.flop();
+    if (pm.sharpen)
+        tf = await tf.sharpen(pm.sharpen);
+    if (pm.median)
+        tf = await tf.median(pm.median);
+    if (pm.blur)
+        tf = await tf.blur(pm.blur);
+    if (pm.normalise)
+        tf = await tf.normalise();
+    if (pm.threshold)
+        tf = await tf.threshold(pm.threshold);
 
-    return transformer;
+    return tf;
 }
 
+async function outputImage(tf, pm) {
+    if (pm.type) {
+        if (pm.type == ".png")
+            tf = await tf.png();
+        else if (pm.type == ".jpeg")
+            tf = await tf.jpeg();
+        else if (pm.type == ".webp")
+            tf = await tf.webp();
+    }
+    else
+        tf = await tf.png();
+
+    return await tf.toBuffer();
+}
 
 module.exports = {
-    calculateMd5,
     readImage,
-    transformImage
+    transformImage,
+    outputImage
 };

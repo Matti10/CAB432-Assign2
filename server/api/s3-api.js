@@ -16,6 +16,7 @@ const {
     PutObjectCommand,
     GetObjectCommand,
     ListObjectsCommand,
+    HeadObjectCommand,
 } = require("@aws-sdk/client-s3");
 
 const {
@@ -24,13 +25,10 @@ const {
 
 require('dotenv').config();
 
-const strm = require('./streamhelpers');
+const fn = require('./functions');
 
 const s3client = new S3Client({ region: process.env.AWS_REGION });
-const EXPIRATION = 300;
-
-
-
+const S3_EXPIRATION = 300;
 
 
 // create S3 bucket on module load
@@ -59,6 +57,9 @@ async function initBucket() {
     }
 }
 
+/* ############################################################ */
+/* Server-Side Functions */
+
 // Get object directly from S3
 async function listObjects() {
     const command = new ListObjectsCommand({
@@ -74,6 +75,22 @@ async function listObjects() {
     }
 }
 
+async function headObject(key) {
+    const command = new HeadObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: key,
+    });
+    try {
+        const data = await s3client.send(command);
+        return data;
+    }
+    catch (exc) {
+        if (exc.$response.statusCode !== 404)
+            console.log("S3 Error:", exc.Code, exc.message);
+        throw exc;
+    }
+}
+
 // Get object directly from S3
 async function getObject(key) {
     const command = new GetObjectCommand({
@@ -83,11 +100,7 @@ async function getObject(key) {
     try {
         const data = await s3client.send(command);
 
-        // use contentType to get the file extension
-        strm.streamToFile(data.Body, 'example.png');
-
-
-        let body = await strm.streamToString(data.Body);
+        let body = await fn.streamToString(data.Body);
         return body;
     }
     catch (exc) {
@@ -113,10 +126,11 @@ async function getObjectStream(key) {
 }
 
 // Put object directly in S3
-async function putObject(key) {
+async function putObject(s3key, data) {
     const command = new PutObjectCommand({
         Bucket: process.env.S3_BUCKET_NAME,
-        Key: key,
+        Key: s3key,
+        Body: data
     });
     try {
         const signedUrl = await s3client.send(command);
@@ -128,6 +142,9 @@ async function putObject(key) {
     }
 }
 
+/* ############################################################ */
+/* Client-Side Functions */
+
 // Create signed url for downloading key from S3
 async function getDownloadUrl(key) {
     const command = new GetObjectCommand({
@@ -135,7 +152,7 @@ async function getDownloadUrl(key) {
         Key: key,
     });
     try {
-        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: EXPIRATION });
+        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: S3_EXPIRATION });
         return signedUrl;
     }
     catch (exc) {
@@ -151,7 +168,7 @@ async function getUploadUrl(key) {
         Key: key,
     });
     try {
-        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: EXPIRATION });
+        const signedUrl = await getSignedUrl(s3client, command, { expiresIn: S3_EXPIRATION });
         return signedUrl;
     }
     catch (exc) {
@@ -165,6 +182,7 @@ module.exports = {
     initBucket,
 
     listObjects,
+    headObject,
     getObject,
     getObjectStream,
     putObject,

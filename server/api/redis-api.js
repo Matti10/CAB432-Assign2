@@ -14,6 +14,8 @@ require('dotenv').config();
 
 // Redis setup
 const redisClient = redis.createClient();
+const REDIS_EXPIRATION = 300;
+
 async function initClient() {
     try {
         console.log("Redis: Connecting to client...");
@@ -25,30 +27,18 @@ async function initClient() {
     }
 }
 
-function constructKey(key, params) {
-    let redisKey = `${key};`;
-    // chain transform operations to construct key
-    if (params.resize && params.resize.width && params.resize.height)
-        redisKey += `resize:${params.resize.width}-${params.resize.height};`;
-    if (params.type)
-        redisKey += `type:${params.type}`;
-
-    return redisKey;
-}
-
-async function getTransform(redisKey) {
+async function getKey(redisKey) {
     const result = await redisClient.get(redisKey);
     return result;
 }
 
-async function storeTransform(redisKey, transformKey) {
-    redisClient.setEx(redisKey, 3600, transformKey);
+async function storeKey(redisKey, s3key) {
+    redisClient.setEx(redisKey, REDIS_EXPIRATION, s3key);
 }
 
 module.exports = {
     redisClient,
     initClient,
-    constructKey,
-    getTransform,
-    storeTransform,
+    getKey,
+    storeKey,
 };
