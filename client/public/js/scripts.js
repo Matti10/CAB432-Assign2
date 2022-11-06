@@ -24,8 +24,6 @@ function calculateMd5(blob) {
     return CryptoJS.MD5(reader.result).toString();
 }
 
-
-
 window.addEventListener('DOMContentLoaded', event => {
 
     // Navbar shrink function
@@ -152,7 +150,7 @@ $(document).on('change', '.file-input', function() {
         }).then((downloadLink) => {
             console.log(downloadLink.url)
             //download files and reset form
-            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-secondary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->Conversion Complete, Click here to download images</a>'
+            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-green btn-lg btn-block mt-25" id="download">Conversion Complete, Click here to download images</a><a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Or, click here to restart</a>'
 
             return downloadLink
 
@@ -242,5 +240,3 @@ async function getProcessedImg(id)
     
    return response
 }
-
-
