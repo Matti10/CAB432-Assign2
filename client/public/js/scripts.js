@@ -93,7 +93,7 @@ $(document).on('change', '.file-input', function() {
 });
 
 // process data when submit button is clicked
-$("#submit").on('click',function() {
+ $("#submit").on('click',async function() {
     console.log('submit clicked');
     console.log(files);
 
@@ -138,28 +138,21 @@ $("#submit").on('click',function() {
             console.log(res)
             console.log(uploadLink);
         })
-        .then(
-            // send img config JSON to server
-            downlink = uploadImgData(reqJSON)
-            .then((res) => {
-                if (!res.ok){
-                    console.log("Serverside error:" + res.statusText);
-                    throw new Error('HTTP ' + res.status);
-                } else {
-                    console.log(res.json())
-                    return res.json();
-                }
-                
-            })
-        )
-        // .then(() => {
-        //     console.log("req.key: " + req.key)            
-        //     return getProcessedImg(req.key)
-        // })
-        .then((downloadLink) => {
-            console.log(downloadLink)
+        
+        // send img config JSON to server
+        downlink = uploadImgData(reqJSON).then((res) => {
+            if (!res.ok){
+                console.log("Serverside error:" + res.statusText);
+                throw new Error('HTTP ' + res.status);
+            } else {
+                console.log(res)
+                return res.json();
+            }
+            
+        }).then((downloadLink) => {
+            console.log(downloadLink.url)
             //download files and reset form
-            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink + '" style="background-color: green" class="btn btn-secondary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->Conversion Complete, Click here to download images</a>'
+            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-secondary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->Conversion Complete, Click here to download images</a>'
 
             return downloadLink
 
@@ -249,3 +242,5 @@ async function getProcessedImg(id)
     
    return response
 }
+
+
