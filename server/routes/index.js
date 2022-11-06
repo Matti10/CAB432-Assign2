@@ -48,7 +48,8 @@ router.post('/transform', async function (req, res) {
         try {
             return res.status(200).json({
                 source: "redis",
-                url: redisURL
+                url: redisURL,
+                key: tfKey
             });
         } catch (exc) {
             return res.status(500).json({
@@ -70,7 +71,8 @@ router.post('/transform', async function (req, res) {
 
         return res.status(200).json({
             source: "s3",
-            url: url
+            url: url,
+            key: tfKey
         });
     }
     catch (exc) {
@@ -107,7 +109,8 @@ router.post('/transform', async function (req, res) {
 
         res.status(200).json({
             source: "server",
-            url: url
+            url: url,
+            key: tfKey
         });
     }
     catch (exc) {

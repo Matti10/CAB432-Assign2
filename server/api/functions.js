@@ -45,7 +45,6 @@ function constructKey(key, pm) {
 
     // convert transforms into an md5 hash, then add type suffix
     transformKey = calculateMd5(transformKey);
-    // 
     if (pm.type)
         transformKey += `${pm.type}`;
     else

@@ -14,6 +14,7 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const cors = require('cors');
+const responseTime = require('response-time');
 
 require('dotenv').config();
 
@@ -35,6 +36,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // setup server middleware
+app.use(responseTime());
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
