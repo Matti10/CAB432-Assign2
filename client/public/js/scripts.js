@@ -150,7 +150,7 @@ $(document).on('change', '.file-input', function() {
         }).then((downloadLink) => {
             console.log(downloadLink.url)
             //download files and reset form
-            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-green btn-lg btn-block mt-25" id="download">Conversion Complete, Click here to download images</a><a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Or, click here to restart</a>'
+            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-green btn-lg btn-block mt-25" id="download">Conversion Complete, Click here to download images</a><a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Click here to restart</a>'
 
             return downloadLink
 
