@@ -22,30 +22,36 @@ function calculateMd5(buffer) {
 
 function constructKey(key, pm) {
     let persistKey = `${key};`;
+    let transformKey = ``;
     // chain transform operations to construct key
     if (pm.resize)
-        persistKey += `resize:${pm.resize.width}-${pm.resize.height};`;
+        transformKey += `resize:${pm.resize.width}-${pm.resize.height};`;
     if (pm.rotate)
-        persistKey += `rotate:${pm.rotate};`;
+        transformKey += `rotate:${pm.rotate};`;
     if (pm.flip)
-        persistKey += `flip;`;
+        transformKey += `flip;`;
     if (pm.flop)
-        persistKey += `flop;`;
+        transformKey += `flop;`;
     if (pm.sharpen)
-        persistKey += `sharpen:${pm.sharpen};`;
+        transformKey += `sharpen:${pm.sharpen};`;
     if (pm.median)
-        persistKey += `median:${pm.median};`;
+        transformKey += `median:${pm.median};`;
     if (pm.blur)
-        persistKey += `blur:${pm.blur};`;
+        transformKey += `blur:${pm.blur};`;
     if (pm.normalise)
-        persistKey += `normalise;`;
+        transformKey += `normalise;`;
     if (pm.threshold)
-        persistKey += `threshold:${pm.threshold};`;
-    if (pm.type)
-        persistKey += `type:${pm.type}`;
-    else
-        persistKey += `type:.png`;
+        transformKey += `threshold:${pm.threshold};`;
 
+    // convert transforms into an md5 hash, then add type suffix
+    transformKey = calculateMd5(transformKey);
+    // 
+    if (pm.type)
+        transformKey += `type:${pm.type}`;
+    else
+        transformKey += `type:.png`;
+
+    persistKey += `${transformKey}`;
     return persistKey;
 }
 
