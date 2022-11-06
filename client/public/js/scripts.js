@@ -97,64 +97,93 @@ $("#submit").on('click',function() {
     console.log('submit clicked');
     console.log(files);
 
+    var convFiles;
+
     //generate a unique sessionID
     const d = new Date();
     sessionID = d.getTime().toString() + "-" + calculateMd5(files[0])
 
     files.forEach(file => {
         
-
+        
         // collect img info
         var img = new Object();
-        img.sessionID = sessionID;
-        img.id = calculateMd5(file);
-        img.height = document.getElementById("imgHeight").value;
-        img.width = document.getElementById("imgWidth").value;
-        img.type = document.getElementById("fileType").value;
-        img.rotation = document.getElementById("imgRotation").value;
-        img.vFlip = document.getElementById("vFlip").value
-        img.hFlip = document.getElementById("hFlip").value;
-       
-        // convert to json 
-        var ImgJSON = JSON.stringify(img);
+        img.resize = new Object();
+        img.resize.height = checkIfNull(document.getElementById("imgHeight").value);
+        img.resize.width = checkIfNull(document.getElementById("imgWidth").value);
+        img.type = checkIfNull(document.getElementById("fileType").value);
+        img.rotate = checkIfNull(document.getElementById("imgRotation").value);
+        img.flip = checkIfBoolean(document.getElementById("vFlip").value);
+        img.flop = checkIfBoolean(document.getElementById("hFlip").value);
         
+
+        var req = new Object();
+        req.sessionID = sessionID;
+        req.key = calculateMd5(file);
+        req.params = img;
+
+        // convert to json 
+        var reqJSON = JSON.stringify(req);
+        
+        console.log(reqJSON)
+
         // set button to "loading"
         document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...'
 
         //get S3 presigned link and upload img blob
-        console.log(ImgJSON)
-        var uploadLink = getS3Link(img.id)
+        console.log(reqJSON)
+        convFiles += getS3Link(req.key)
         .then(uploadLink => {
             res = uploadToS3(uploadLink, file)
             console.log(res)
             console.log(uploadLink);
         })
-        // .then(
-        //     // send img config JSON to server
-        //     uploadImgData(ImgJSON)
-        //     .then((res) => {
-        //         if (!res.ok){
-        //             console.log("Serverside error:" + res.statusText);
-        //             throw new Error('HTTP ' + res.status);
-        //         } else {
-        //             console.log(res.json())
-        //         }
+        .then(
+            // send img config JSON to server
+            uploadImgData(reqJSON)
+            .then((res) => {
+                if (!res.ok){
+                    console.log("Serverside error:" + res.statusText);
+                    throw new Error('HTTP ' + res.status);
+                } else {
+                    console.log(res.json())
+                }
                 
-        //     })
-        // )
+            })
+        )
         .then(() => {            
-            return getProcessedImg(img.id)
+            return getProcessedImg(req.id)
         })
         .then((downloadLink) => {
             console.log(downloadLink)
             //download files and reset form
             document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink + '" style="background-color: green" class="btn btn-secondary btn-lg btn-block mt-25" id="download" <!--target=”_blank” onclick="location.reload()"-->Conversion Complete, Click here to download images</a>'
 
+            return downloadLink
+
         })
 
     });
 
 });
+
+function checkIfNull(value)
+{
+    if (value == "")
+    {
+        return null
+    }
+    return value
+}
+
+function checkIfBoolean(value)
+{
+    if (value == "on")
+    {
+        return true;
+    }
+    return false;
+}
 
 // get a presigned s3 link to send the image blob too
 async function getS3Link(checksum)
@@ -193,8 +222,8 @@ async function uploadToS3(URL, file)
 async function uploadImgData(data)
 {
     const headers = new Headers({ 'Content-Type': 'application/json' });
-    const response = await fetch(serverAddress + "/upload", {
-        method: 'PUT',
+    const response = await fetch(serverAddress + "/transform", {
+        method: 'POST',
         headers: headers,
         body: data
     });
