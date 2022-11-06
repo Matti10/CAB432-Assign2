@@ -103,58 +103,63 @@ $(document).on('change', '.file-input', function() {
 
     files.forEach(file => {
         
-        
-        // collect img info
-        var img = new Object();
-        img.resize = new Object();
-        img.resize.height = checkIfNull(parseInt(document.getElementById("imgHeight").value));
-        img.resize.width = checkIfNull(parseInt(document.getElementById("imgWidth").value));
-        img.type = checkIfNull(document.getElementById("fileType").value);
-        img.rotate = checkIfNull(parseInt(document.getElementById("imgRotation").value.toIn));
-        img.flip = checkIfBoolean(document.getElementById("vFlip").value);
-        img.flop = checkIfBoolean(document.getElementById("hFlip").value);
-        
-
-        var req = new Object();
-        req.sessionID = sessionID;
-        req.key = calculateMd5(file);
-        req.params = img;
-
-        // convert to json 
-        var reqJSON = JSON.stringify(req);
-        
-        console.log(reqJSON)
-
-        // set button to "loading"
-        document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...'
-
-        //get S3 presigned link and upload img blob
-        console.log(reqJSON)
-        convFiles += getS3Link(req.key)
-        .then(uploadLink => {
-            res = uploadToS3(uploadLink, file)
-            console.log(res)
-            console.log(uploadLink);
-        })
-        
-        // send img config JSON to server
-        downlink = uploadImgData(reqJSON).then((res) => {
-            if (!res.ok){
-                console.log("Serverside error:" + res.statusText);
-                throw new Error('HTTP ' + res.status);
-            } else {
-                console.log(res)
-                return res.json();
-            }
+        try {
+            // collect img info
+            var img = new Object();
+            img.resize = new Object();
+            img.resize.height = checkIfNull(parseInt(document.getElementById("imgHeight").value));
+            img.resize.width = checkIfNull(parseInt(document.getElementById("imgWidth").value));
+            img.type = checkIfNull(document.getElementById("fileType").value);
+            img.rotate = checkIfNull(parseInt(document.getElementById("imgRotation").value.toIn));
+            img.flip = checkIfBoolean(document.getElementById("vFlip").value);
+            img.flop = checkIfBoolean(document.getElementById("hFlip").value);
             
-        }).then((downloadLink) => {
-            console.log(downloadLink.url)
-            //download files and reset form
-            document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-green btn-lg btn-block mt-25" id="download">Conversion Complete, Click here to download images</a><a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Click here to restart</a>'
 
-            return downloadLink
+            var req = new Object();
+            req.sessionID = sessionID;
+            req.key = calculateMd5(file);
+            req.params = img;
 
-        })
+            // convert to json 
+            var reqJSON = JSON.stringify(req);
+            
+            console.log(reqJSON)
+
+            // set button to "loading"
+            document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...'
+
+            //get S3 presigned link and upload img blob
+            console.log(reqJSON)
+            convFiles += getS3Link(req.key)
+            .then(uploadLink => {
+                res = uploadToS3(uploadLink, file)
+                console.log(res)
+                console.log(uploadLink);
+            })
+            
+            // send img config JSON to server
+            downlink = uploadImgData(reqJSON).then((res) => {
+                if (!res.ok){
+                    console.log("Serverside error:" + res.statusText);
+                    throw new Error('HTTP ' + res.status);
+                } else {
+                    console.log(res)
+                    return res.json();
+                }
+                
+            }).then((downloadLink) => {
+                console.log(downloadLink.url)
+                //download files and reset form
+                document.getElementById("buttonDiv").innerHTML = '<a href ="' + downloadLink.url + '" style="background-color: green" class="btn btn-green btn-lg btn-block mt-25" id="download">Conversion Complete, Click here to download images</a><a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Click here to restart</a>'
+
+                return downloadLink
+
+            })
+        }
+        catch(err){
+            document.getElementById("buttonDiv").innerHTML = '<a  style="background-color: green" class="btn btn-red btn-lg btn-block mt-25" id="reset" onclick="location.reload()">Something went wrong! Click here to restart</a>'
+        }
+        
 
     });
 
