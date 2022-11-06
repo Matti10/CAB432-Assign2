@@ -19,17 +19,7 @@ const fn = require('../api/functions');
 /* GET home page. */
 router.get('/', function (req, res, next) {
     res.render('index', { title: 'CAB432 Express App' });
-    res.status(200).send('CAB432 Server Index');
-});
-
-router.get('/readImage', function (req, res) {
-
-    sharp_api.readImage()
-        .then(result => {
-
-
-            res.status(200).send(result);
-        });
+    // res.status(200).send('CAB432 Server Index');
 });
 
 router.post('/transform', async function (req, res) {
@@ -50,16 +40,15 @@ router.post('/transform', async function (req, res) {
     const tfKey = fn.constructKey(req.body.key, req.body.params);
 
     // 2. Check Redis for cached transform URL
-    const redisResult = await redis_api.getKey(tfKey);
-    if (redisResult) {
+    const redisURL = await redis_api.getKey(tfKey);
+    if (redisURL) {
         console.log("TF-Redis: TF found in Redis");
 
         // Return cached transform URL
         try {
-            const url = await s3_api.getDownloadUrl(redisResult);
             return res.status(200).json({
                 source: "redis",
-                url: url
+                url: redisURL
             });
         } catch (exc) {
             return res.status(500).json({
