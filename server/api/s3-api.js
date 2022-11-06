@@ -12,6 +12,7 @@
 
 const {
     S3Client,
+    HeadBucketCommand,
     CreateBucketCommand,
     PutObjectCommand,
     GetObjectCommand,
@@ -33,12 +34,24 @@ const S3_EXPIRATION = 300;
 
 // create S3 bucket on module load
 async function initBucket() {
-    const command = new CreateBucketCommand({
+    const headCommand = new HeadBucketCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+    });
+    const createCommand = new CreateBucketCommand({
         Bucket: process.env.S3_BUCKET_NAME,
     });
     try {
-        console.log("S3: Creating bucket...");
-        const data = await s3client.send(command);
+        console.log("S3: Checking if bucket exists...");
+        const data = await s3client.send(headCommand);
+        console.log("S3: bucket already exists");
+        return data;
+    }
+    catch (exc) {
+        console.log("S3: bucket does not exist, creating...");
+    }
+
+    try {
+        const data = await s3client.send(createCommand);
         console.log("S3: Bucket created");
         return data;
     } catch (exc) {
