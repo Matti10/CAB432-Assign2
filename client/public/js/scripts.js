@@ -12,7 +12,7 @@
 
 // Globals
 var files;
-var serverAddress = 'http://127.0.0.1:3001';
+var serverAddress = 'http://n9995846-assign2-server-128342326.ap-southeast-2.elb.amazonaws.com/';
 
 
 // modified from: https://stackoverflow.com/questions/34492637/how-to-calculate-md5-checksum-of-blob-using-cryptojs
@@ -128,7 +128,7 @@ $(document).on('change', '.file-input', function() {
             // set button to "loading"
             document.getElementById("submit").innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...'
 
-            //get S3 presigned link and upload img blob
+            //get S3 presigned link and upload img blob_
             console.log(reqJSON)
             convFiles += getS3Link(req.key)
             .then(uploadLink => {
